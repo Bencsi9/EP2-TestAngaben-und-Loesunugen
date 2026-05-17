@@ -45,14 +45,14 @@ public class CheckoutCounterStack {
      * @param source the existing CheckoutCounterStack to copy; must not be {@code null}
      */
     public CheckoutCounterStack(CheckoutCounterStack source) {
-        if(source.isEmpty()){
-            return;
+        if (source == null) return;
+
+        this.stack = new CheckoutCounter[source.stack.length];
+        this.size = source.size;
+
+        for (int i = 0; i < source.size; i++) {
+            this.stack[i] = source.stack[i];
         }
-        this.stack=new CheckoutCounter[source.stack.length];
-        for (int i = 0; i < source.stack.length; i++) {
-            this.push(source.stack[i]);
-        }
-        this.size=source.size;
 
         //TODO: define constructor.
         

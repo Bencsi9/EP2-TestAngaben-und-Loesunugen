@@ -75,9 +75,12 @@ public class CustomerQueue {
      * and the addition leads to a full occupation of the internal array.
      */
     private void doubleCapacity() {
-        Customer[] customersNew = new Customer[customer.length * 2];
-        for (int i = 0; i < customer.length; i++) {
-            customersNew[i] = customer[(head + i) % customer.length];
+        int oldLength = customer.length;
+        int newLength = oldLength == 0 ? 8 : oldLength * 2;
+        Customer[] customersNew = new Customer[newLength];
+
+        for (int i = 0; i < size; i++) {
+            customersNew[i] = customer[(head + i) % oldLength];
         }
         customer = customersNew;
         head = 0;

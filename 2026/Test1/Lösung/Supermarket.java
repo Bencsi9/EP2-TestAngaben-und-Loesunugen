@@ -53,20 +53,16 @@ public class Supermarket {
      * @return the number of checkout counters that were closed
      */
     public int closeEmptyCounters() {
-        if(counters.isEmpty()){
-            return -1;
+        if (counters.isEmpty()) {
+            return 0;
         }
-        int count=0;
-        CheckoutCounterStack manage= new CheckoutCounterStack();
-        for (int i = 0; i < counters.size(); i++) {
-            CheckoutCounter temp=counters.pop();
-            if(temp.getWaitingline().size()==0){
-                count++;
-            } else {
-                manage.push(temp);
-            }
+        int count = 0;
+
+        // Addig nézzük a tetejét, amíg üres kasszát találunk
+        while (!counters.isEmpty() && counters.peek().getWaitingline().size() == 0) {
+            counters.pop();
+            count++;
         }
-        counters=manage;
 
         //TODO: implement method.
         return count;
@@ -88,32 +84,32 @@ public class Supermarket {
      *          waiting line has {@code n} or fewer customers, this method does nothing
      */
     public void openNewCounter(int n) {
-        if(counters.isEmpty()){
+        if (counters.isEmpty()) {
             return;
         }
-        CheckoutCounterStack manage= new CheckoutCounterStack();
-        CheckoutCounter temp=counters.pop();
-        if(temp.getWaitingline().size()<n){
-            counters.push(temp);
+
+        CheckoutCounter topCounter = counters.peek();
+        int currentSize = topCounter.getWaitingline().size();
+
+        if (currentSize <= n || n <= 0) {
             return;
-        } else {
-            int newSize=Math.abs(n-temp.getWaitingline().size());
-            CustomerQueue oldCounter=new CustomerQueue(n);
-            CustomerQueue newCounter=new CustomerQueue(newSize);
-            for (int i = 0; i < n; i++) {
-                oldCounter.add(temp.getWaitingline().poll());
-            }
-            for (int i = 0; i < newSize; i++) {
-                newCounter.add(temp.getWaitingline().poll());
-            }
-            CheckoutCounter newC=new CheckoutCounter(newCounter);
-            manage.push(newC);
-            CheckoutCounter oldC=new CheckoutCounter(oldCounter);
-            manage.push(oldC);
-            while (manage.size()!=0){
-                counters.push(manage.pop());
-            }
         }
+
+        counters.pop();
+
+        CustomerQueue newQueue = new CustomerQueue();
+        CustomerQueue oldQueue = new CustomerQueue();
+
+        for (int i = 0; i < n; i++) {
+            oldQueue.add(topCounter.getWaitingline().poll());
+        }
+
+        while (topCounter.getWaitingline().size() > 0) {
+            newQueue.add(topCounter.getWaitingline().poll());
+        }
+
+        counters.push(new CheckoutCounter(oldQueue));
+        counters.push(new CheckoutCounter(newQueue));
         //TODO: implement method.
         
     }
